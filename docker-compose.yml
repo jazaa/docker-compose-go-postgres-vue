@@ -1,0 +1,30 @@
+version: '3.7'
+services:
+
+  db:
+    container_name: 'db'
+    build: ./postgres
+    restart: always
+    network_mode: 'host'
+    volumes:
+      - ./postgres:/src
+
+  frontend:
+    container_name: 'frontend'
+    build: ./frontend
+    volumes:
+      - /app/node_modules
+      - ./frontend:/app
+    command: '/bin/sh /app/npm.sh'
+    restart: always
+    network_mode: 'host'
+
+  go:
+    container_name: 'go'
+    build: ./go
+    restart: always
+    volumes:
+      - ./frontend/dist:/site/src/frontend/dist
+      - ./go:/site/src
+    command: 'go run /site/src/main.go'
+    network_mode: 'host'
